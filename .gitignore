@@ -1,3 +1,11 @@
+#VS Workspace
+console/Debug
+console/.vs
+console/Release
+*.sln
+*.vcxproj
+*.filters
+
 # Prerequisites
 *.d
 
@@ -27,6 +35,6 @@
 *.lib
 
 # Executables
-*.exe
+#*.exe
 *.out
 *.app
