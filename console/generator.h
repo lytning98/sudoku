@@ -1,5 +1,5 @@
 #pragma once
 
 namespace generator {
-	void generate(FILE* file, bool empline);
+	void generate(FILE* file, bool empline, bool has_empty = true);
 }

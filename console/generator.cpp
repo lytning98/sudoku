@@ -19,14 +19,14 @@ namespace generator {
 		std::shuffle(first, last, random_engine);
 	}
 
-	void generate(FILE* file, bool empline) {
+	void generate(FILE* file, bool empline, bool has_empty) {
 		int map[9][9];
-		int p[9] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, q[9];
+		int p[9] = { 8, 1, 2, 3, 4, 5, 6, 7, 9 }, q[9];
 
 		memcpy(q, p, sizeof(q));
 		std::for_each(q, q + 9, [](int& x) {x--;});
 
-		shuffle(p, p + 9);
+		shuffle(p + 1, p + 9);
 		for (int i = 0; i < 3; i++){
 			for (int j = 0; j < 3; j++){
 				memcpy(map[i * 3 + j], p, sizeof(p));
@@ -36,11 +36,14 @@ namespace generator {
 					forward(p, 3);
 			}
 		}
-		for(int i = 0; i < 3; i++){
-			for (int j = 0; j < 3; j++){
-				shuffle(q, q + 9);
-				for (int k = 0; k < 4; k++) {
-					map[i * 3 + q[k] / 3][j * 3 + q[k] % 3] = 0;
+
+		if(has_empty){
+			for(int i = 0; i < 3; i++){
+				for (int j = 0; j < 3; j++){
+					shuffle(q, q + 9);
+					for (int k = 0; k < 4; k++) {
+						map[i * 3 + q[k] / 3][j * 3 + q[k] % 3] = 0;
+					}
 				}
 			}
 		}
