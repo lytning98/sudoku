@@ -28,5 +28,5 @@ namespace solver {
 		}
 	};
 
-	void solve(FILE* fin, FILE* fout);
+	int solve(FILE* fin, FILE* fout);
 }

@@ -1,5 +1,3 @@
-// sudoku.cpp: 定义控制台应用程序的入口点。
-//
 
 #include "stdafx.h"
 #include "generator.h"
@@ -29,8 +27,10 @@ int main(int argc, char** argv)
 		fopen_s(&file, argv[2], "r");
 		fopen_s(&fout, "sudoku.txt", "w");
 		printf("Solving ...\n");
-		solver::solve(file, fout);
-		printf("Done. Answers has been saved into sudoku.txt .\n");
+		auto start = clock();
+		int count = solver::solve(file, fout);
+		auto end = clock();
+		printf("Done in %.3f seconds.\nAnswers has been saved into sudoku.txt .\n", (double)(end-start)/CLOCKS_PER_SEC);
 		fclose(file);
 		fclose(fout);
 	}
