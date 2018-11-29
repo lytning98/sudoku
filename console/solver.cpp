@@ -54,15 +54,18 @@ namespace solver {
 	bool initial = true;
 	void write_result(FILE* fout)
 	{
+		char buf[300];
 		while (going || !Q.empty()) {
 			while (!Q.empty()) {
-				initial ? (initial = false) : fprintf_s(fout, "\n");
+				initial ? (initial = false) : fputc('\n', fout);
 				int* store = Q.front(); 
-				for (int i = 0; i < 9; i++)
-					for (int j = 0; j < 9; j++) {
-						fputc(store[i * 9 + j] + '0', fout);
-						fputc(" \n"[j == 8], fout);
-					}
+				int index = 0;
+				for (int i = 0; i < 81; i++){
+					buf[index++] = store[i] + '0';
+					buf[index++] = " \n"[i % 9 == 8];
+				}
+				buf[index] = 0; //replace the last '\n' with '\0'
+				fputs(buf, fout);
 				free(store);
 				Q.pop();
 			}
