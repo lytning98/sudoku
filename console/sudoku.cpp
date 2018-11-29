@@ -31,8 +31,8 @@ int main(int argc, char** argv)
 		int count = solver::solve(file, fout);
 		auto end = clock();
 		printf("Done in %.3f seconds.\nAnswers has been saved into sudoku.txt .\n", (double)(end-start)/CLOCKS_PER_SEC);
-		fclose(file);
-		fclose(fout);
+		file ? fclose(file) : 0;
+		fout ? fclose(fout) : 0;
 	}
 	else {
 		printf("Usage :\n[Generate] sudoku.exe -c {count}\n[Solving] soduku.exe -s\n");
