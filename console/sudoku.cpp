@@ -5,6 +5,7 @@
 
 int main(int argc, char** argv)
 {
+	printf("%s\n", argv[0]);
 	if(argc == 3 && (argv[1][1] == 'g' || argv[1][1] == 'c')){
 		auto gene_func = (argv[1][1] == 'g') ? generator::puzzle_generate : generator::generate;
 		int count = 0;

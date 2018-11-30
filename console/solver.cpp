@@ -2,7 +2,7 @@
 #include "solver.hpp"
 
 namespace solver {
-	const bool use_multi_thread = true;
+#define multi_thread 2018
 
 	bitset row_bit[9], col_bit[9], cell_bit[9];
 	std::vector<int> valid[9][9];
@@ -48,31 +48,34 @@ namespace solver {
 		}
 		return false;
 	}
-
-	std::queue<int*>Q;
+	
 	bool going = true;
 	bool initial = true;
-	void write_result(FILE* fout)
-	{
+	std::queue<int*>Q;
+	std::mutex qMutex;
+	std::condition_variable cond_var;
+
+	void write_result(FILE* fout) {
 		char buf[300];
-		while (going || !Q.empty()) {
+		while (going) {
+			std::unique_lock<std::mutex> lk(qMutex);
+			cond_var.wait(lk);
 			while (!Q.empty()) {
 				initial ? (initial = false) : fputc('\n', fout);
-				int* store = Q.front(); 
+				int* store = Q.front(); Q.pop();
 				int index = 0;
-				for (int i = 0; i < 81; i++){
+				for (int i = 0; i < 81; i++) {
 					buf[index++] = store[i] + '0';
 					buf[index++] = " \n"[i % 9 == 8];
 				}
 				buf[index] = 0; //replace the last '\n' with '\0'
 				fputs(buf, fout);
-				free(store);
-				Q.pop();
+				delete[] store;
 			}
 		}
 		printf("IO finished.\n");
 	}
-
+	
 	void solve(FILE* fout) {
 		for (int i = 0; i < 9; i++)
 			row_bit[i].reset(), col_bit[i].reset(), cell_bit[i].reset();
@@ -103,28 +106,28 @@ namespace solver {
 
 		dfs(0, 0);
 
-		if(use_multi_thread){
-			int* store = new int[81];
-			memcpy(store, map, sizeof(map));
-			Q.push(store);
-		}
-		else {
-			for (int i = 0; i < 9; i++)
-				for (int j = 0; j < 9; j++){
-					fputc(map[i][j] + '0', fout);
-					fputc(" \n"[j == 8], fout);
-				}
-		}
+#ifdef multi_thread
+		int* store = new int[81];
+		memcpy(store, map, sizeof(map));
+		std::unique_lock<std::mutex> lk(qMutex);
+		Q.push(store);
+		cond_var.notify_all();
+#else
+		for (int i = 0; i < 9; i++)
+			for (int j = 0; j < 9; j++){
+				fputc(map[i][j] + '0', fout);
+				fputc(" \n"[j == 8], fout);
+			}
+#endif
 	}
 
 	int solve(FILE* fin, FILE* fout) {
-		std::thread IOthread;
-
-		if(use_multi_thread){
-			IOthread = std::thread(write_result, fout);
-		}
+#ifdef multi_thread
+		std::thread IOthread(write_result, fout);
+#endif
 
 		int count = 0;
+		going = true;
 		
 		while ((map[0][0] = fgetc(fin))!= EOF) {
 			map[0][0] -= '0'; fgetc(fin);
@@ -140,10 +143,12 @@ namespace solver {
 		}
 
 		printf("Solving finished.\n");
+		
+#ifdef multi_thread
 		going = false;
-		if(use_multi_thread){
-			IOthread.join();
-		}
+		cond_var.notify_all();
+		IOthread.join();
+#endif
 		return count;
 	}
 }
