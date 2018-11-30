@@ -19,7 +19,59 @@ namespace generator {
 		std::shuffle(first, last, random_engine);
 	}
 
-	void generate(FILE* file, bool empline, bool has_empty) {
+	inline void print(FILE* file, int map[9][9], bool empline) {
+		for (int i = 0; i < 9; i++)
+			for (int j = 0; j < 9; j++)
+				fprintf(file, "%d%c", map[i][j], " \n"[j == 8]);
+		if (empline)
+			fprintf(file, "\n");
+	}
+
+	void step_forward(int* p, int shift[3][3]) {
+		using namespace std;
+
+		if (!next_permutation(shift[2], shift[2] + 3)) {
+			if (!next_permutation(shift[1], shift[1] + 3)) {
+				next_permutation(p + 1, p + 9);
+				memcpy(p + 10, p + 1, sizeof(int) * 8);
+				for (int i = 0; i < 3; i++)
+					shift[1][i] = shift[2][i] = i;
+			}
+			for (int i = 0; i < 3; i++)
+				shift[2][i] = i;
+		}
+	}
+
+	void generate(FILE* file, bool empline) {
+		static int map[9][9];
+		static int p[18] = { 8, 1, 2, 3, 4, 5, 6, 7, 9, 8, 1, 2, 3, 4, 5, 6, 7, 9 };
+		static int shift[3][3] = {
+			{ 0, 1, 2 },
+			{ 0, 1, 2 },
+			{ 0, 1, 2 }
+		};
+		for (int j = 1; j < 3; j++){
+			printf("shift[%d] = {", j);
+			for (int i = 0; i < 3; i++)
+				printf("%d%c", shift[j][i], ",}"[i == 2]);
+			putchar('\n');
+		}
+			
+		step_forward(p, shift);
+		int offset = 0;
+		for(int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++) {
+				memcpy(map[i * 3 + shift[i][j]], p + offset, sizeof(int) * 9);
+				if (j == 2)
+					offset = (offset + 1) % 9;
+				else
+					offset = (offset + 3) % 9;
+			}
+		
+		print(file, map, empline);
+	}
+
+	void puzzle_generate(FILE* file, bool empline) {
 		int map[9][9];
 		int p[9] = { 8, 1, 2, 3, 4, 5, 6, 7, 9 }, q[9];
 
@@ -37,21 +89,15 @@ namespace generator {
 			}
 		}
 
-		if(has_empty){
-			for(int i = 0; i < 3; i++){
-				for (int j = 0; j < 3; j++){
-					shuffle(q, q + 9);
-					for (int k = 0; k < 4; k++) {
-						map[i * 3 + q[k] / 3][j * 3 + q[k] % 3] = 0;
-					}
+		for(int i = 0; i < 3; i++){
+			for (int j = 0; j < 3; j++){
+				shuffle(q, q + 9);
+				for (int k = 0; k < 6; k++) {
+					map[i * 3 + q[k] / 3][j * 3 + q[k] % 3] = 0;
 				}
 			}
 		}
 		
-		for (int i = 0; i < 9; i++)
-			for (int j = 0; j < 9; j++)
-				fprintf(file, "%d%c", map[i][j], " \n"[j == 8]);
-		if (empline)
-			fprintf(file, "\n");
+		print(file, map, empline);
 	}
 }

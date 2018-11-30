@@ -5,7 +5,8 @@
 
 int main(int argc, char** argv)
 {
-	if(argc == 3 && argv[1][1] == 'c'){
+	if(argc == 3 && (argv[1][1] == 'g' || argv[1][1] == 'c')){
+		auto gene_func = (argv[1][1] == 'g') ? generator::puzzle_generate : generator::generate;
 		int count = 0;
 		sscanf_s(argv[2], "%d", &count);
 		if(count<1||count>1000000){
@@ -16,7 +17,7 @@ int main(int argc, char** argv)
 			FILE* file;
 			fopen_s(&file, "sudoku_puzzle.txt", "w");
 			while(count--){
-				generator::generate(file, (bool)(count!=0));
+				gene_func(file, (bool)(count!=0));
 			}
 			fclose(file);
 			printf("Generated puzzles into sudoku_puzzle.txt .\n");
@@ -34,7 +35,8 @@ int main(int argc, char** argv)
 		file ? fclose(file) : 0;
 		fout ? fclose(fout) : 0;
 	}
-	else {
+	else
+	{
 		printf("Usage :\n[Generate] sudoku.exe -c {count}\n[Solving] soduku.exe -s\n");
 	}
     return 0;
