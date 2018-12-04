@@ -3,23 +3,9 @@
 
 namespace generator {
 	const int space_per_cell = 4;
-	std::default_random_engine random_engine((unsigned)std::chrono::system_clock::now().time_since_epoch().count());
+	int map[9][9];
 
-	void forward(int* p, int step) {
-		int tmp[9];
-		for (int i = 0; i < step; i++)
-			tmp[i] = p[i];
-		for (int i = step; i < 9; i++)
-			p[i - step] = p[i];
-		for (int i = 0; i < step; i++)
-			p[9 - step + i] = tmp[i];
-	}
-
-	inline void shuffle(int* first, int* last) {
-		std::shuffle(first, last, random_engine);
-	}
-
-	inline void print(FILE* file, int map[9][9], bool empline) {
+	inline void write_map(FILE* file, bool empline) {
 		for (int i = 0; i < 9; i++)
 			for (int j = 0; j < 9; j++)
 				fprintf(file, "%d%c", map[i][j], " \n"[j == 8]);
@@ -42,18 +28,17 @@ namespace generator {
 		}
 	}
 
-	void generate(FILE* file, bool empline) {
-		static int map[9][9];
+	void generate() {
 		static int p[18] = { 8, 1, 2, 3, 4, 5, 6, 7, 9, 8, 1, 2, 3, 4, 5, 6, 7, 9 };
 		static int shift[3][3] = {
 			{ 0, 1, 2 },
 			{ 0, 1, 2 },
 			{ 0, 1, 2 }
 		};
-		
+
 		step_forward(p, shift);
 		int offset = 0;
-		for(int i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++) {
 				memcpy(map[i * 3 + shift[i][j]], p + offset, sizeof(int) * 9);
 				if (j == 2)
@@ -61,12 +46,30 @@ namespace generator {
 				else
 					offset = (offset + 3) % 9;
 			}
-		
-		print(file, map, empline);
+	}
+
+	void generate_and_write(FILE* file, bool empline) {
+		generate();
+		write_map(file, empline);
+	}
+
+	std::default_random_engine random_engine((unsigned)std::chrono::system_clock::now().time_since_epoch().count());
+
+	void forward(int* p, int step) {
+		int tmp[9];
+		for (int i = 0; i < step; i++)
+			tmp[i] = p[i];
+		for (int i = step; i < 9; i++)
+			p[i - step] = p[i];
+		for (int i = 0; i < step; i++)
+			p[9 - step + i] = tmp[i];
+	}
+
+	inline void shuffle(int* first, int* last) {
+		std::shuffle(first, last, random_engine);
 	}
 
 	void puzzle_generate(FILE* file, bool empline) {
-		int map[9][9];
 		int p[9] = { 8, 1, 2, 3, 4, 5, 6, 7, 9 }, q[9];
 
 		memcpy(q, p, sizeof(q));
@@ -86,12 +89,12 @@ namespace generator {
 		for(int i = 0; i < 3; i++){
 			for (int j = 0; j < 3; j++){
 				shuffle(q, q + 9);
-				for (int k = 0; k < 5; k++) {
+				for (int k = 0; k < space_per_cell; k++) {
 					map[i * 3 + q[k] / 3][j * 3 + q[k] % 3] = 0;
 				}
 			}
 		}
 		
-		print(file, map, empline);
+		write_map(file, empline);
 	}
 }
