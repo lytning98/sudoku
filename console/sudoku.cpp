@@ -5,7 +5,6 @@
 
 int main(int argc, char** argv)
 {
-	printf("%s\n", argv[0]);
 	if(argc == 3 && (argv[1][1] == 'g' || argv[1][1] == 'c')){
 		auto gene_func = (argv[1][1] == 'g') ? generator::puzzle_generate : generator::generate;
 		int count = 0;
@@ -25,14 +24,18 @@ int main(int argc, char** argv)
 		}
 	}
 	else if (argc == 3 && argv[1][1] == 's'){
-		FILE *file, *fout;
+		FILE *file = nullptr, *fout = nullptr;
 		fopen_s(&file, argv[2], "r");
 		fopen_s(&fout, "sudoku.txt", "w");
+		if (!file || !fout) {
+			printf("Failed to load [%s] or open [sudoku.txt]. Please ensure the file exists.\n", argv[2]);
+			exit(0);
+		}
 		printf("Solving ...\n");
 		auto start = clock();
 		int count = solver::solve(file, fout);
 		auto end = clock();
-		printf("Done in %.3f seconds.\nAnswers has been saved into sudoku.txt .\n", (double)(end-start)/CLOCKS_PER_SEC);
+		printf("Solved %d puzzles in %.3f seconds.\nAnswers has been saved into sudoku.txt .\n", count, (double)(end-start)/CLOCKS_PER_SEC);
 		file ? fclose(file) : 0;
 		fout ? fclose(fout) : 0;
 	}

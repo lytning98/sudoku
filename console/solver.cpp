@@ -51,6 +51,7 @@ namespace solver {
 	
 	bool going = true;
 	bool initial = true;
+#ifdef multi_thread
 	std::queue<int*>Q;
 	std::mutex qMutex;
 	std::condition_variable cond_var;
@@ -75,6 +76,7 @@ namespace solver {
 		}
 		printf("IO finished.\n");
 	}
+#endif
 	
 	void solve(FILE* fout) {
 		for (int i = 0; i < 9; i++)
@@ -113,6 +115,7 @@ namespace solver {
 		Q.push(store);
 		cond_var.notify_all();
 #else
+		initial ? (initial = false) : fputc('\n', fout);
 		for (int i = 0; i < 9; i++)
 			for (int j = 0; j < 9; j++){
 				fputc(map[i][j] + '0', fout);
