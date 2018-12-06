@@ -7,7 +7,7 @@ namespace solver {
 
 	class bitset {
 	private:
-		int value;
+		int value = 0;
 		
 	public:
 		void reset() {
