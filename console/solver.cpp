@@ -24,10 +24,14 @@ namespace solver {
 			char buf[300];
 			while (going) {
 				std::unique_lock<std::mutex> lk(qMutex);
+				// wait and block
 				cond_var.wait(lk);
 				while (!Q.empty()) {
+					// if it's not the first group, print an empty line for separation
 					initial ? (initial = false) : fputc('\n', fout);
+					// fetch data from IO queue
 					int* store = Q.front(); Q.pop();
+					// write into file
 					int index = 0;
 					for (int i = 0; i < 81; i++) {
 						buf[index++] = store[i] + '0';
@@ -35,6 +39,7 @@ namespace solver {
 					}
 					buf[index] = 0; //replace the last '\n' with '\0'
 					fputs(buf, fout);
+					// release memory
 					delete[] store;
 				}
 			}
@@ -47,8 +52,10 @@ namespace solver {
 		void push_queue() {
 			int* store = new int[81];
 			memcpy(store, map, sizeof(map));
+			// use mutex lock for critic section
 			std::unique_lock<std::mutex> lk(qMutex);
 			Q.push(store);
+			// notify the second thread for new data
 			cond_var.notify_all();
 		}
 
@@ -66,6 +73,7 @@ namespace solver {
 		inline void join_IO() {
 			going = false;
 			cond_var.notify_all();
+			// wait until IO finishes
 			IO_thread -> join();
 		}
 #endif
@@ -97,9 +105,11 @@ namespace solver {
 			Initialization of DFS module, pre-combuting of important data
 		*/
 		void initialize() {
+			// reset bitsets
 			for (int i = 0; i < 9; i++)
 				row_bit[i].reset(), col_bit[i].reset(), cell_bit[i].reset();
-
+			
+			// record empty positions
 			for (int i = 0; i < 9; i++)
 				for (int j = 0; j < 9; j++)
 				{
@@ -108,12 +118,14 @@ namespace solver {
 					}
 					else {
 						emp[i][j] = false;
+						// record fixed number
 						row_bit[i].set(map[i][j]);
 						col_bit[j].set(map[i][j]);
 						cell_bit[cell_ids[i][j]].set(map[i][j]);
 						int mask = 1 << map[i][j];
 					}
 				}
+			// find valid number candidates for each position
 			for (int i = 0; i < 9; i++)
 				for (int j = 0; j < 9; j++)
 				{
@@ -129,6 +141,7 @@ namespace solver {
 			Main DFS function : try evnery possible number in each cell
 		*/
 		bool dfs(int x, int y) {
+			// enumerate positions : correct coordinate if it crosses boundary
 			if (y == 9) {
 				y = 0;
 				x++;
@@ -139,16 +152,22 @@ namespace solver {
 			if (!emp[x][y])	return dfs(x, y + 1);
 
 			int cell_id = cell_ids[x][y];
+			// enumerate every valid number
 			for (int i : valid[x][y])
 			{
+				// check if this number has appeared in same row, column, room
 				if (!(row_bit[x].test(i) || col_bit[y].test(i) || cell_bit[cell_id].test(i)))
 				{
+					// fill the cell with this number
 					map[x][y] = i;
+					// 
 					row_bit[x].set(i);
 					col_bit[y].set(i);
 					cell_bit[cell_id].set(i);
+					// search other positions, if a solution is found, return
 					if (dfs(x, y + 1))
 						return true;
+					// if not, revoke the modification and try next number
 					row_bit[x].erase(i);
 					col_bit[y].erase(i);
 					cell_bit[cell_id].erase(i);
@@ -186,6 +205,7 @@ namespace solver {
 		Judge if there's next puzzle in input file, and read it if there is.
 	*/
 	bool read_next_puzzle(FILE* fin) {
+		// check if it's EndOfFile
 		if ((map[0][0] = fgetc(fin)) == EOF) {
 			return false;
 		}
