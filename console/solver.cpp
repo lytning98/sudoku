@@ -5,6 +5,9 @@ namespace solver {
 #define multi_thread 2018
 	int map[9][9];
 
+	/*
+		I/O operations
+	*/
 	namespace IO {
 		bool going = true;
 		bool initial = true;
@@ -14,6 +17,9 @@ namespace solver {
 		std::condition_variable cond_var;
 		std::thread* IO_thread = nullptr;
 
+		/*
+			Loop for new data in queue to write
+		*/
 		void write_result(FILE* fout) {
 			char buf[300];
 			while (going) {
@@ -35,6 +41,9 @@ namespace solver {
 			printf("IO finished.\n");
 		}
 
+		/*
+			Push the current ending into the IO queue to be processed.
+		*/
 		void push_queue() {
 			int* store = new int[81];
 			memcpy(store, map, sizeof(map));
@@ -43,11 +52,17 @@ namespace solver {
 			cond_var.notify_all();
 		}
 
+		/*
+			Start the second thread for IO.
+		*/
 		inline void start_IO(FILE* fout) {
 			IO_thread = new std::thread(write_result, fout);
 			going = true;
 		}
 
+		/*
+			Wait until IO finished.
+		*/
 		inline void join_IO() {
 			going = false;
 			cond_var.notify_all();
@@ -55,10 +70,16 @@ namespace solver {
 		}
 #endif
 	}
-
+	
+	/*
+		Depth-First Search
+	*/
 	namespace DFS {
 		bitset row_bit[9], col_bit[9], cell_bit[9];
 		std::vector<int> valid[9][9];
+		/*
+			Given each cell an ID identifying which room it's in
+		*/
 		const int cell_ids[9][9] = {
 			{ 0, 0, 0, 1, 1, 1, 2, 2, 2 },
 			{ 0, 0, 0, 1, 1, 1, 2, 2, 2 },
@@ -72,6 +93,9 @@ namespace solver {
 		};
 		bool emp[9][9];
 
+		/*
+			Initialization of DFS module, pre-combuting of important data
+		*/
 		void initialize() {
 			for (int i = 0; i < 9; i++)
 				row_bit[i].reset(), col_bit[i].reset(), cell_bit[i].reset();
@@ -101,6 +125,9 @@ namespace solver {
 				}
 		}
 
+		/*
+			Main DFS function : try evnery possible number in each cell
+		*/
 		bool dfs(int x, int y) {
 			if (y == 9) {
 				y = 0;
@@ -130,12 +157,16 @@ namespace solver {
 			return false;
 		}
 
+		// Interface
 		inline void solve() {
 			initialize();
 			dfs(0, 0);
 		}
 	}
 	
+	/*
+		Solve the current sudoku puzzle
+	*/
 	inline void solve_and_write(FILE* fout) {
 		DFS::solve();
 
@@ -151,6 +182,9 @@ namespace solver {
 #endif
 	}
 
+	/*
+		Judge if there's next puzzle in input file, and read it if there is.
+	*/
 	bool read_next_puzzle(FILE* fin) {
 		if ((map[0][0] = fgetc(fin)) == EOF) {
 			return false;

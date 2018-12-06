@@ -5,6 +5,9 @@ namespace generator {
 	const int space_per_cell = 4;
 	int map[9][9];
 
+	/*
+		Write current map to file.
+	*/
 	inline void write_map(FILE* file, bool empline) {
 		for (int i = 0; i < 9; i++)
 			for (int j = 0; j < 9; j++)
@@ -13,6 +16,9 @@ namespace generator {
 			fprintf(file, "\n");
 	}
 
+	/*
+		Enumerate permutations.
+	*/
 	void step_forward(int* p, int shift[3][3]) {
 		using namespace std;
 
@@ -28,6 +34,9 @@ namespace generator {
 		}
 	}
 
+	/*
+		Generate an ending.
+	*/
 	void generate() {
 		static int p[18] = { 8, 1, 2, 3, 4, 5, 6, 7, 9, 8, 1, 2, 3, 4, 5, 6, 7, 9 };
 		static int shift[3][3] = {
@@ -52,7 +61,12 @@ namespace generator {
 		generate();
 		write_map(file, empline);
 	}
-
+	//////////////////////////////////////
+	/*
+		Code below is for generating random sudoku puzzles.
+		This function is used to generate data for solver.
+	*/
+	//////////////////////////////////////
 	std::default_random_engine random_engine((unsigned)std::chrono::system_clock::now().time_since_epoch().count());
 
 	void forward(int* p, int step) {

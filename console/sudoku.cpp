@@ -6,6 +6,9 @@
 int main(int argc, char** argv)
 {
 	if(argc == 3 && (argv[1][1] == 'g' || argv[1][1] == 'c')){
+		/*
+			Generate ending
+		*/
 		auto gene_func = (argv[1][1] == 'g') ? generator::puzzle_generate : generator::generate_and_write;
 		const char* filename = (argv[1][1] == 'g') ? "sudoku_puzzle.txt" : "sudoku.txt";
 		int count = 0;
@@ -25,6 +28,9 @@ int main(int argc, char** argv)
 		}
 	}
 	else if (argc == 3 && argv[1][1] == 's'){
+		/*
+			Solving
+		*/
 		FILE *file = nullptr, *fout = nullptr;
 		fopen_s(&file, argv[2], "r");
 		fopen_s(&fout, "sudoku.txt", "w");
@@ -42,6 +48,9 @@ int main(int argc, char** argv)
 	}
 	else
 	{
+		/*
+			Illegal commands
+		*/
 		printf("Usage :\n[Generate] sudoku.exe -c {count}\n[Solving] soduku.exe -s\n");
 	}
     return 0;
