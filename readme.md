@@ -20,5 +20,7 @@
 / blog					博客作业目录
 	/ img					Markdown 文件引用的图片目录
 	/ blog.md				Markdown 格式的博客
+	/ blog.html				博客的 HTML 导出
+	/ blog.pdf				博客的 PDF 导出
 ```
 
