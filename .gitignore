@@ -2,9 +2,9 @@
 console/Debug
 console/.vs
 console/Release
-*.sln
-*.vcxproj
-*.filters
+UnitTest/Debug
+UnitTest/.vs
+UnitTest/Release
 
 # Prerequisites
 *.d
