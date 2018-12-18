@@ -10,10 +10,12 @@ namespace generator {
 	*/
 	inline void write_map(FILE* file, bool empline) {
 		for (int i = 0; i < 9; i++)
-			for (int j = 0; j < 9; j++)
-				fprintf(file, "%d%c", map[i][j], " \n"[j == 8]);
+			for (int j = 0; j < 9; j++){
+				fputc(map[i][j] + '0', file);
+				fputc(" \n"[j == 8], file);
+			}
 		if (empline)
-			fprintf(file, "\n");
+			fputc('\n', file);
 	}
 
 	/*
