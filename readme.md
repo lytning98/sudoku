@@ -2,7 +2,10 @@
 
 2018 年秋季学期《软件工程基础》课程个人项目作业，共分为相互独立的两个项目：可进行数独终局生成和数独求解的控制台应用程序、可生成数独谜题并共用户进行数独游戏的图形用户界面（GUI）应用程序。
 
-更多信息可阅读介绍本项目的 <a href="http://123.206.78.69/sudoku/" target="_blank">Blog</a> 。（*若链接无法访问，请尝试 <a href="https://blog.csdn.net/Lytning/article/details/84853057" target="_blank">CSDN 链接</a>* ）
+更多信息可阅读介绍本项目的相关 Blog：
+
+- 介绍控制台版本程序的 <a href="http://123.206.78.69/sudoku/" target="_blank">Blog</a> 。（*若链接无法访问，请尝试 <a href="https://blog.csdn.net/Lytning/article/details/84853057" target="_blank">CSDN 链接</a>* ）
+- 简单介绍 GUI 版本 <a href="http://123.206.78.69/sudoku/blog_GUI.html" target="_blank">Blog</a> 。（ *<a href="https://blog.csdn.net/Lytning/article/details/85269947" target="_blank">CSDN 链接</a>* ）
 
 ### 目录结构
 
@@ -29,4 +32,11 @@
 	/ blog.md				Markdown 格式的博客
 	/ blog.pdf				博客的 PDF 导出
 ```
+
+### GUI 效果演示
+
+详细的操作说明请查阅介绍 GUI 的 Blog 文章。
+
+
+![demo](https://raw.githubusercontent.com/lytning98/sudoku/master/blog/img/DEMO.gif)
 
