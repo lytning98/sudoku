@@ -1,12 +1,15 @@
 # Sudoku
 
-2018 年秋季学期《软件工程基础》课程个人项目作业
+2018 年秋季学期《软件工程基础》课程个人项目作业，共分为相互独立的两个项目：可进行数独终局生成和数独求解的控制台应用程序、可生成数独谜题并共用户进行数独游戏的图形用户界面（GUI）应用程序。
+
+更多信息可阅读介绍本项目的 [Blog](http://123.206.78.69/sudoku/) 。（*若链接无法访问，请尝试 [CSDN 链接](https://blog.csdn.net/Lytning/article/details/84853057)* ）
 
 ### 目录结构
 
 ```
 / bin					可执行文件等二进制文件目录
-	/ sudoku.exe				可执行文件
+	/ sudoku.exe				控制台程序可执行文件
+	/ GUI.exe				GUI 可执行文件
 / console				控制台程序工程目录
 	/ generator.cpp				生成器实现
 	/ generator.h				生成器头文件
@@ -17,6 +20,10 @@
 / UnitTest				控制台程序单元测试工程目录
 	/ UnitTest.cpp				单元测试实现
 	/ ...					其他
+/ GUI					GUI 程序工程目录
+	/ Form1.cs				主窗体实现文件
+	/ sudoku.cs				数独逻辑实现文件
+	/ ...
 / blog					博客作业目录
 	/ img					Markdown 文件引用的图片目录
 	/ blog.md				Markdown 格式的博客
